@@ -11,6 +11,7 @@ Ein simples, sofort spielbares **Asteroids-Arcade-Spiel** als reine statische We
 - Kollisionen Schiff/Asteroiden mit 3 Leben
 - Score-System
 - Game-Over-Overlay mit Neustart per Leertaste
+- Pause/Fortsetzen mit Taste `P`
 - Kein Backend, keine Datenbank, kein Build-Prozess
 
 ## Lokal starten
@@ -39,6 +40,7 @@ Da das Projekt nur aus statischen Dateien besteht, gibt es zwei einfache Wege:
 - **Pfeil links/rechts:** Rotation
 - **Pfeil hoch:** Schub
 - **Leertaste:** Schießen
+- **P:** Pause/Fortsetzen
 - **Leertaste bei Game Over:** Neustart
 
 ## Projektstruktur
