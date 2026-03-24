@@ -56,6 +56,7 @@
     right: false,
     thrust: false,
     shoot: false,
+    pausePressed: false,
   };
 
   let gameState;
@@ -164,6 +165,7 @@
   function resetGame() {
     gameState = {
       running: true,
+      paused: false,
       score: 0,
       lives: CONFIG.gameplay.lives,
       ship: createShip(),
@@ -187,6 +189,11 @@
     if (code === "ArrowLeft") input.left = true;
     if (code === "ArrowRight") input.right = true;
     if (code === "ArrowUp") input.thrust = true;
+    if (code === "KeyP") {
+      event.preventDefault();
+      if (!input.pausePressed) togglePause();
+      input.pausePressed = true;
+    }
     if (code === "Space") {
       event.preventDefault();
       input.shoot = true;
@@ -200,6 +207,7 @@
     if (code === "ArrowRight") input.right = false;
     if (code === "ArrowUp") input.thrust = false;
     if (code === "Space") input.shoot = false;
+    if (code === "KeyP") input.pausePressed = false;
   }
 
   window.addEventListener("keydown", onKeyDown);
@@ -332,6 +340,10 @@
       return;
     }
 
+    if (gameState.paused) {
+      return;
+    }
+
     if (gameState.levelClearCooldown > 0) {
       gameState.levelClearCooldown -= dt;
       if (gameState.levelClearCooldown <= 0) updateHud("Läuft");
@@ -386,6 +398,17 @@
     updateExplosions(dt);
     handleCollisions();
     updateHud(gameState.levelClearCooldown > 0 ? "Welle geschafft!" : "Läuft");
+  }
+
+  function togglePause() {
+    if (!gameState.running) return;
+
+    gameState.paused = !gameState.paused;
+    if (gameState.paused) {
+      updateHud("Pausiert");
+    } else {
+      updateHud("Läuft");
+    }
   }
 
   function updateExplosions(dt) {
@@ -486,6 +509,22 @@
     ctx.fillText("Leertaste drücken zum Neustart", canvas.width / 2, canvas.height / 2 + 34);
   }
 
+  function drawPauseOverlay() {
+    if (!gameState.running || !gameState.paused) return;
+
+    ctx.fillStyle = "rgba(4, 7, 13, 0.5)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#8ef9f3";
+    ctx.font = "bold 50px Trebuchet MS";
+    ctx.textAlign = "center";
+    ctx.fillText("PAUSE", canvas.width / 2, canvas.height / 2 - 12);
+
+    ctx.fillStyle = "#eaf6ff";
+    ctx.font = "22px Trebuchet MS";
+    ctx.fillText("Drücke P zum Fortsetzen", canvas.width / 2, canvas.height / 2 + 26);
+  }
+
   function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -497,6 +536,7 @@
     for (const asteroid of gameState.asteroids) drawAsteroid(asteroid);
     drawShip(gameState.ship);
     drawExplosions();
+    drawPauseOverlay();
     drawGameOverOverlay();
   }
 
